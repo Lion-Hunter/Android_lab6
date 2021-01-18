@@ -23,18 +23,18 @@ class DownloadPictureCoroutines : AppCompatActivity() {
 
         binding.button.setOnClickListener {
             scope.launch(Dispatchers.IO) {
-                var mIcon11: Bitmap? = null
+                var picture: Bitmap? = null
                 try {
                     val stream = URL("https://wallbox.ru/wallpapers/main2" +
                             "/202046/16050262595faac1d3d9aec1.70131582.jpg").openStream()
-                    mIcon11 = BitmapFactory.decodeStream(stream)
+                    picture = BitmapFactory.decodeStream(stream)
                 } catch (e: Exception) {
                     e.message?.let { Log.e("Error", it) }
                     e.printStackTrace()
                 }
 
                 launch(Dispatchers.Main) {
-                    binding.imageView.setImageBitmap(mIcon11)
+                    binding.imageView.setImageBitmap(picture)
                 }
             }
         }
