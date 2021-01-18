@@ -226,7 +226,7 @@ class DownloadPictureCoroutines : AppCompatActivity() {
                             "/202046/16050262595faac1d3d9aec1.70131582.jpg").openStream()
                     picture = BitmapFactory.decodeStream(stream)
                 } catch (e: Exception) {
-                    e.message?.let { Log.e("Error", it) }
+                    Log.e("Error", e.message!!)
                     e.printStackTrace()
                 }
 
