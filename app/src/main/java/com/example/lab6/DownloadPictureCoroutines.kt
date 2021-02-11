@@ -17,7 +17,6 @@ class DownloadPictureCoroutines : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         val binding = DownloadLayoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
 

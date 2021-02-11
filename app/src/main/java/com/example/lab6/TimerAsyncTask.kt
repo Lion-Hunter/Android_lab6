@@ -40,7 +40,7 @@ class TimerAsyncTask : AppCompatActivity() {
     inner class MyAsyncTask : AsyncTask<Void, Void, Void>() {
         override fun doInBackground(vararg params: Void?): Void? {
             while (!isCancelled) {
-                TimeUnit.SECONDS.sleep(1)
+                Thread.sleep(1000)
                 publishProgress()
             }
             return null

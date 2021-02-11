@@ -9,17 +9,18 @@ const val WATCH_STATE = "watch_state"
 
 class TimerThreads : AppCompatActivity() {
     private var secondsElapsed: Int = 0
-    private var onScreen = true
 
     private var backgroundThread = Thread {
-        while (!Thread.currentThread().isInterrupted) {
-            Thread.sleep(1000)
-            if (onScreen) {
+        try {
+            while (true) {
+                Thread.sleep(1000)
                 textSecondsElapsed.post {
                     textSecondsElapsed.text = "Seconds elapsed: " + secondsElapsed++
                 }
-            } else Thread.currentThread().interrupt()
-        }
+
+                if (Thread.currentThread().isInterrupted) break
+            }
+        } catch (e: InterruptedException) {}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,12 +34,11 @@ class TimerThreads : AppCompatActivity() {
 
     override fun onStart() {
         backgroundThread.start()
-        onScreen = true
         super.onStart()
     }
 
     override fun onStop() {
-        onScreen = false
+        backgroundThread.interrupt()
         super.onStop()
     }
 
