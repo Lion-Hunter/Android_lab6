@@ -15,35 +15,29 @@
 ## Программа работы
 #### Задача 1. Альтернативные решения задачи "не секундомер" из Лаб. 2
 **1) Java Threads** 
-За основу данного решения был взят код из лабораторной №2. В нем была добавлена проверка для работы текущего потока с использованием isInterrupted(), то есть пока поток не прерван, счетчик продолжает считать (если он на экране). Так же добавлена проверка на "уход" приложения с экрана - значение false переменной onScreen приводит к вызову метода interrupt(), прерывающего текущий поток. Обновленный код приведен ниже.
+За основу данного решения был взят код из лабораторной №2. В нем была добавлена проверка для работы текущего потока с использованием методов interrupt() и isInterrupted(), то есть пока приложение на экране, бэкграунд поток рааботает, а как только приложение уходит с экрана, в методе onStop() поток прерывается, соответствующая проверка в теле потока пройдена не будет и выполнение прервется. InterruptedException отлавливается во всем цикле wile, так как прерывание может произойти перед вызовом sleep(), что и породит исключение.
 ```
 const val WATCH_STATE = "watch_state"
-private const val TAG = "MainActivity"
-var k = 0
 
 class TimerThreads : AppCompatActivity() {
     private var secondsElapsed: Int = 0
-    private var onScreen = true
 
     private var backgroundThread = Thread {
-        k += 1
-        Log.d(TAG, "Thread $k created")
-        while (!Thread.currentThread().isInterrupted) {
-            Thread.sleep(1000)
-            if (onScreen) {
+        try {
+            while (true) {
+                Thread.sleep(1000)
                 textSecondsElapsed.post {
                     textSecondsElapsed.text = "Seconds elapsed: " + secondsElapsed++
                 }
-            } else {
-                Thread.currentThread().interrupt()
-                Log.d(TAG, "Thread ${k - 1} interrupted")
+
+                if (Thread.currentThread().isInterrupted) break
             }
-        }
+        } catch (e: InterruptedException) {}
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.timer_layout)
 
         if (savedInstanceState != null) {
             secondsElapsed = savedInstanceState.getInt(WATCH_STATE, 0)
@@ -52,12 +46,11 @@ class TimerThreads : AppCompatActivity() {
 
     override fun onStart() {
         backgroundThread.start()
-        onScreen = true
         super.onStart()
     }
 
     override fun onStop() {
-        onScreen = false
+        backgroundThread.interrupt()
         super.onStop()
     }
 
